@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import java.util.Calendar;
 import java.util.Random;
 
+import static kotlin.test.AssertionsKt.assertTrue;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SuppressWarnings("WeakerAccess")

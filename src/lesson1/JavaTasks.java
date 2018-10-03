@@ -3,10 +3,9 @@ package lesson1;
 import kotlin.NotImplementedError;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.IllegalFormatException;
-import java.util.List;
+import java.util.*;
+
+import static java.lang.Math.max;
 
 @SuppressWarnings("unused")
 
@@ -127,17 +126,21 @@ public class JavaTasks {
      * 121.3
      */
     static public void sortTemperatures(String inputName, String outputName) throws IOException, IllegalFormatException {
-        List<Integer> listOfTheWholes = new ArrayList<>();
-        List<Integer> listOfDecimals = new ArrayList<>();
+        List<Double> listOfTemperatures = new ArrayList<>();
         try (BufferedReader bufferedReader = new BufferedReader(new FileReader(inputName))) {
             String line;
             while ((line = bufferedReader.readLine()) != null) {
-                listOfTheWholes.add(Integer.parseInt(bufferedReader.readLine().split(".")[0]));
-                listOfDecimals.add(Integer.parseInt(bufferedReader.readLine().split(".")[1]));
+                listOfTemperatures.add(Double.parseDouble(line));
             }
         }
-        int[] timesArray = listOfTheWholes.stream().mapToInt(i -> i).toArray();
-        Sorts.countingSort(timesArray, 774);
+        Collections.sort(listOfTemperatures);
+        BufferedWriter writer = new BufferedWriter(new FileWriter(outputName));
+        for (int i = 0; i < listOfTemperatures.size(); i++) {
+            System.out.println(listOfTemperatures.get(i));
+            writer.write(Double.toString(listOfTemperatures.get(i)));
+            writer.newLine();
+        }
+        writer.close();
     }
 
     /**
@@ -172,12 +175,44 @@ public class JavaTasks {
     static public void sortSequence(String inputName, String outputName) throws IOException, IllegalFormatException {
         List<Integer> timeList = new ArrayList<>();
         try (BufferedReader bufferedReader = new BufferedReader(new FileReader(inputName))) {
-              for (String line; (line = bufferedReader.readLine()) != null; ) {
+            for (String line; (line = bufferedReader.readLine()) != null; ) {
                 timeList.add(Integer.parseInt(line));
             }
-        } int[] timesArray = timeList.stream().mapToInt(i -> i).toArray();
+        }
+        int[] timesArray = timeList.stream().mapToInt(i -> i).toArray();
+        int[] timesArrayNotSorted = timesArray.clone();
         Arrays.sort(timesArray);
-
+        int previous = timesArray[0];
+        int mostCommon = timesArray[0];
+        int count = 1;
+        int maxCount = 1;
+        for (int i = 1; i < timesArray.length; i++) {
+            if (timesArray[i] == previous) {
+                count++;
+            } else {
+                if (count > maxCount) {
+                    mostCommon = timesArray[i - 1];
+                    maxCount = count;
+                }
+                previous = timesArray[i];
+                count = 1;
+            }
+        }
+        if (count > maxCount) {
+            mostCommon = timesArray[timesArray.length - 1];
+        }
+        BufferedWriter writer = new BufferedWriter(new FileWriter(outputName));
+        for (int i = 0; i < timesArrayNotSorted.length; i++) {
+            if (timesArrayNotSorted[i] != mostCommon) {
+                writer.write(Integer.toString(timesArrayNotSorted[i]));
+                writer.newLine();
+            }
+        }
+        for (int i = 0; i < max(count, maxCount); i++) {
+            writer.write(Integer.toString(mostCommon));
+            writer.newLine();
+        }
+        writer.close();
     }
 
     /**

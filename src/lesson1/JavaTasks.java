@@ -136,7 +136,6 @@ public class JavaTasks {
         Collections.sort(listOfTemperatures);
         BufferedWriter writer = new BufferedWriter(new FileWriter(outputName));
         for (int i = 0; i < listOfTemperatures.size(); i++) {
-            System.out.println(listOfTemperatures.get(i));
             writer.write(Double.toString(listOfTemperatures.get(i)));
             writer.newLine();
         }

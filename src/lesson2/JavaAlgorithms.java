@@ -96,8 +96,37 @@ public class JavaAlgorithms {
      * Если имеется несколько самых длинных общих подстрок одной длины,
      * вернуть ту из них, которая встречается раньше в строке first.
      */
-    static public String longestCommonSubstring(String firs, String second) {
-        throw new NotImplementedError();
+    static public String longestCommonSubstring(String first, String second) {
+        int firstLength = first.length(), endingPoint = 0, secondLength = second.length(),
+                mostCommonLength = 0, currentMatrixRow = 0, currenMatrixColumn = 0;
+        int[][] matrix = new int[firstLength + 1][secondLength + 1];
+        for (int i = 0; i <= first.length(); i++) {
+            for (int j = 0; j <= secondLength; j++) {
+                if (i == 0 || j == 0) {
+                    matrix[i][j] = 0;
+                } else if (first.charAt(i - 1) == second.charAt(j - 1)){
+                    matrix[i][j] = matrix[i - 1][j - 1] + 1;
+                    if (matrix[i][j] > mostCommonLength) {
+                        mostCommonLength = matrix[i][j];
+                        currentMatrixRow = i;
+                        currenMatrixColumn = j;
+                    }
+                } else {
+                    matrix[i][j] = 0;
+                }
+            }
+        }
+        if (mostCommonLength == 0) {
+            return "";
+        }
+        String mostCommonSubstring = "";
+        while (matrix[currentMatrixRow][currenMatrixColumn] != 0) {
+            mostCommonSubstring = first.charAt(currentMatrixRow - 1) + mostCommonSubstring;
+            --mostCommonLength;
+            currenMatrixColumn--;
+            currentMatrixRow--;
+        }
+        return mostCommonSubstring;
     }
 
     /**

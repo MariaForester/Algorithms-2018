@@ -3,6 +3,9 @@ package lesson1;
 import kotlin.NotImplementedError;
 
 import java.io.*;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 import static java.lang.Math.max;
@@ -39,31 +42,23 @@ public class JavaTasks {
      * В случае обнаружения неверного формата файла бросить любое исключение.
      */
 
-    static public void sortTimes(String inputName, String outputName) throws IOException, IllegalFormatException {
-        List<Integer> timeList = new ArrayList<>();
+    static public void sortTimes(String inputName, String outputName) throws IOException, IllegalFormatException, ParseException {
+        List<Date> timeList = new ArrayList<>();
+        DateFormat formatter = new SimpleDateFormat("HH:mm:ss");
         try (BufferedReader bufferedReader = new BufferedReader(new FileReader(inputName))) {
             for (String line; (line = bufferedReader.readLine()) != null; ) {
-                String[] lineComponents = line.split(":");
-                timeList.add(Integer.parseInt(lineComponents[0]) * 3600 + Integer.parseInt(lineComponents[1]) * 60 +
-                        Integer.parseInt(lineComponents[2]));
+                Date date = formatter.parse(line);
+                timeList.add(date);
             }
         }
-        int[] timesArray = timeList.stream().mapToInt(i -> i).toArray();
-        Sorts.mergeSort(timesArray);
+        Collections.sort(timeList);
         BufferedWriter writer = new BufferedWriter(new FileWriter(outputName));
-        for (int i = 0; i < timesArray.length; i++) {
-            String hours = timesArray[i] / 3600 < 10 ? "0" + Integer.toString(timesArray[i] / 3600) :
-                    Integer.toString(timesArray[i] / 3600);
-            String minutes = (timesArray[i] / 60) % 60 < 10 ? "0" + Integer.toString((timesArray[i] / 60) % 60) :
-                    Integer.toString((timesArray[i] / 60) % 60);
-            String seconds = timesArray[i] % 60 < 10 ? "0" + Integer.toString(timesArray[i] % 60) :
-                    Integer.toString(timesArray[i] % 60);
-            writer.write(hours + ":" + minutes + ":" + seconds);
+        for (Date time : timeList) {
+            writer.write(formatter.format(time));
             writer.newLine();
         }
         writer.close();
     }
-
 
     /**
      * Сортировка адресов
@@ -126,20 +121,53 @@ public class JavaTasks {
      * 121.3
      */
     static public void sortTemperatures(String inputName, String outputName) throws IOException, IllegalFormatException {
-        List<Double> listOfTemperatures = new ArrayList<>();
+        List<Float> listOfTemperatures = new ArrayList<>();
         try (BufferedReader bufferedReader = new BufferedReader(new FileReader(inputName))) {
             String line;
             while ((line = bufferedReader.readLine()) != null) {
-                listOfTemperatures.add(Double.parseDouble(line));
+                listOfTemperatures.add(Float.parseFloat(line));
             }
         }
-        Collections.sort(listOfTemperatures);
+        listOfDoublesSort(listOfTemperatures);
         BufferedWriter writer = new BufferedWriter(new FileWriter(outputName));
-        for (int i = 0; i < listOfTemperatures.size(); i++) {
-            writer.write(Double.toString(listOfTemperatures.get(i)));
+        for (Float temperature : listOfTemperatures) {
+            writer.write(Float.toString(temperature));
             writer.newLine();
         }
         writer.close();
+    }
+
+    private static int partition(List<Float> elements, int min, int max) {
+        Float x = elements.get(min + Sorts.random.nextInt(max - min + 1));
+        int left = min, right = max;
+        while (left <= right) {
+            while (elements.get(left) < x) {
+                left++;
+            }
+            while (elements.get(right) > x) {
+                right--;
+            }
+            if (left <= right) {
+                Float temp = elements.get(left);
+                elements.set(left, elements.get(right));
+                elements.set(right, temp);
+                left++;
+                right--;
+            }
+        }
+        return right;
+    }
+
+    private static void listOfDoublesSort(List<Float> elements, int min, int max) {
+        if (min < max) {
+            int border = partition(elements, min, max);
+            listOfDoublesSort(elements, min, border);
+            listOfDoublesSort(elements, border + 1, max);
+        }
+    }
+
+    private static void listOfDoublesSort(List<Float> elements) {
+        listOfDoublesSort(elements, 0, elements.size() - 1);
     }
 
     /**
@@ -180,7 +208,7 @@ public class JavaTasks {
         }
         int[] timesArray = timeList.stream().mapToInt(i -> i).toArray();
         int[] timesArrayNotSorted = timesArray.clone();
-        Arrays.sort(timesArray);
+        Sorts.quickSort(timesArray);
         int previous = timesArray[0];
         int mostCommon = timesArray[0];
         int count = 1;

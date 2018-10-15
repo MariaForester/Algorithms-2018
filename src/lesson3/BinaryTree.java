@@ -36,12 +36,10 @@ public class BinaryTree<T extends Comparable<T>> extends AbstractSet<T> implemen
         Node<T> newNode = new Node<>(t);
         if (closest == null) {
             root = newNode;
-        }
-        else if (comparison < 0) {
+        } else if (comparison < 0) {
             assert closest.left == null;
             closest.left = newNode;
-        }
-        else {
+        } else {
             assert closest.right == null;
             closest.right = newNode;
         }
@@ -66,9 +64,10 @@ public class BinaryTree<T extends Comparable<T>> extends AbstractSet<T> implemen
      */
     @Override
     public boolean remove(Object o) {
-        // TODO
+        //TODO
         throw new NotImplementedError();
     }
+
 
     @Override
     public boolean contains(Object o) {
@@ -87,12 +86,10 @@ public class BinaryTree<T extends Comparable<T>> extends AbstractSet<T> implemen
         int comparison = value.compareTo(start.value);
         if (comparison == 0) {
             return start;
-        }
-        else if (comparison < 0) {
+        } else if (comparison < 0) {
             if (start.left == null) return start;
             return find(start.left, value);
-        }
-        else {
+        } else {
             if (start.right == null) return start;
             return find(start.right, value);
         }
@@ -102,7 +99,8 @@ public class BinaryTree<T extends Comparable<T>> extends AbstractSet<T> implemen
 
         private Node<T> current = null;
 
-        private BinaryTreeIterator() {}
+        private BinaryTreeIterator() {
+        }
 
         /**
          * Поиск следующего элемента
@@ -172,9 +170,42 @@ public class BinaryTree<T extends Comparable<T>> extends AbstractSet<T> implemen
     @NotNull
     @Override
     public SortedSet<T> headSet(T toElement) {
-        // TODO
-        throw new NotImplementedError();
+        SortedSet<T> sortedSet = new TreeSet<>();
+        headSetRecursive(toElement, sortedSet, root);
+        return sortedSet;
     }
+
+    private void headSetRecursive(T toElement, SortedSet<T> sortedSet, Node<T> currentNode) {
+        int edgeComparison = currentNode.value.compareTo(toElement);
+        if (edgeComparison == -1) {
+            sortedSet.add(currentNode.value);
+            if (currentNode.right != null) {
+                headSetRecursive(toElement, sortedSet, currentNode.right);
+            }
+            if (currentNode.left != null) {
+                newNodeAddition(sortedSet, currentNode.left);
+            }
+        } else if (edgeComparison == 0) {
+            if (currentNode.left != null) {
+                newNodeAddition(sortedSet, currentNode.left);
+            }
+        } else {
+            if (currentNode.left != null) {
+                headSetRecursive(toElement, sortedSet, currentNode.left);
+            }
+        }
+    }
+
+    private void newNodeAddition(SortedSet<T> sortedSet, Node<T> currentNode) {
+        sortedSet.add(currentNode.value);
+        if (currentNode.right != null) {
+            newNodeAddition(sortedSet, currentNode.right);
+        }
+        if (currentNode.left != null) {
+            newNodeAddition(sortedSet, currentNode.left);
+        }
+    }
+
 
     /**
      * Найти множество всех элементов больше или равных заданного
@@ -183,8 +214,26 @@ public class BinaryTree<T extends Comparable<T>> extends AbstractSet<T> implemen
     @NotNull
     @Override
     public SortedSet<T> tailSet(T fromElement) {
-        // TODO
-        throw new NotImplementedError();
+        SortedSet<T> sortedSet = new TreeSet<>();
+        tailSetRecursive(fromElement, sortedSet, root);
+        return sortedSet;
+    }
+
+    private void tailSetRecursive(T fromElement, SortedSet<T> sortedSet, Node<T> currentNode) {
+        int edgeComparison = currentNode.value.compareTo(fromElement);
+        if (edgeComparison == -1) {
+            if (currentNode.right != null) {
+                tailSetRecursive(fromElement, sortedSet, currentNode.right);
+            }
+        } else {
+            sortedSet.add(currentNode.value);
+            if (currentNode.right != null) {
+                newNodeAddition(sortedSet, currentNode.right);
+            }
+            if (currentNode.left != null) {
+                tailSetRecursive(fromElement, sortedSet, currentNode.left);
+            }
+        }
     }
 
     @Override

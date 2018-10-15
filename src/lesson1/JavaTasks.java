@@ -41,7 +41,8 @@ public class JavaTasks {
      * <p>
      * В случае обнаружения неверного формата файла бросить любое исключение.
      */
-
+    // Трудоемкость O(n * log(n))
+    // Ресурсоемкость O(n)
     static public void sortTimes(String inputName, String outputName) throws IOException, IllegalFormatException, ParseException {
         List<Date> timeList = new ArrayList<>();
         DateFormat formatter = new SimpleDateFormat("HH:mm:ss");
@@ -120,6 +121,8 @@ public class JavaTasks {
      * 99.5
      * 121.3
      */
+    // Трудоемкость O(n^2)
+    // Ресурсоемкость O(n)
     static public void sortTemperatures(String inputName, String outputName) throws IOException, IllegalFormatException {
         List<Float> listOfTemperatures = new ArrayList<>();
         try (BufferedReader bufferedReader = new BufferedReader(new FileReader(inputName))) {
@@ -128,7 +131,7 @@ public class JavaTasks {
                 listOfTemperatures.add(Float.parseFloat(line));
             }
         }
-        listOfDoublesSort(listOfTemperatures);
+        listOfFloatsSort(listOfTemperatures);
         BufferedWriter writer = new BufferedWriter(new FileWriter(outputName));
         for (Float temperature : listOfTemperatures) {
             writer.write(Float.toString(temperature));
@@ -137,7 +140,7 @@ public class JavaTasks {
         writer.close();
     }
 
-    private static int partition(List<Float> elements, int min, int max) {
+    private static int partitionForFloats(List<Float> elements, int min, int max) {
         Float x = elements.get(min + Sorts.random.nextInt(max - min + 1));
         int left = min, right = max;
         while (left <= right) {
@@ -158,16 +161,16 @@ public class JavaTasks {
         return right;
     }
 
-    private static void listOfDoublesSort(List<Float> elements, int min, int max) {
+    private static void listOfFloatsSort(List<Float> elements, int min, int max) {
         if (min < max) {
-            int border = partition(elements, min, max);
-            listOfDoublesSort(elements, min, border);
-            listOfDoublesSort(elements, border + 1, max);
+            int border = partitionForFloats(elements, min, max);
+            listOfFloatsSort(elements, min, border);
+            listOfFloatsSort(elements, border + 1, max);
         }
     }
 
-    private static void listOfDoublesSort(List<Float> elements) {
-        listOfDoublesSort(elements, 0, elements.size() - 1);
+    private static void listOfFloatsSort(List<Float> elements) {
+        listOfFloatsSort(elements, 0, elements.size() - 1);
     }
 
     /**
@@ -199,39 +202,40 @@ public class JavaTasks {
      * 2
      * 2
      */
+    // Трудоемкость O(n^2)
+    // Ресурсоемкость O(n)
     static public void sortSequence(String inputName, String outputName) throws IOException, IllegalFormatException {
-        List<Integer> timeList = new ArrayList<>();
+        List<Integer> sequence = new ArrayList<>();
         try (BufferedReader bufferedReader = new BufferedReader(new FileReader(inputName))) {
             for (String line; (line = bufferedReader.readLine()) != null; ) {
-                timeList.add(Integer.parseInt(line));
+                sequence.add(Integer.parseInt(line));
             }
         }
-        int[] timesArray = timeList.stream().mapToInt(i -> i).toArray();
-        int[] timesArrayNotSorted = timesArray.clone();
-        Sorts.quickSort(timesArray);
-        int previous = timesArray[0];
-        int mostCommon = timesArray[0];
+        List<Integer> sequenceNotSorted = new ArrayList<Integer>(sequence);
+        listOfIntegersSort(sequence);
+        int previous = sequence.get(0);
+        int mostCommon = sequence.get(0);
         int count = 1;
         int maxCount = 1;
-        for (int i = 1; i < timesArray.length; i++) {
-            if (timesArray[i] == previous) {
+        for (int i = 1; i < sequence.size(); i++) {
+            if (sequence.get(i) == previous) {
                 count++;
             } else {
                 if (count > maxCount) {
-                    mostCommon = timesArray[i - 1];
+                    mostCommon = sequence.get(i - 1);
                     maxCount = count;
                 }
-                previous = timesArray[i];
+                previous = sequence.get(i);
                 count = 1;
             }
         }
         if (count > maxCount) {
-            mostCommon = timesArray[timesArray.length - 1];
+            mostCommon = sequence.get(sequence.size() - 1);
         }
         BufferedWriter writer = new BufferedWriter(new FileWriter(outputName));
-        for (int i = 0; i < timesArrayNotSorted.length; i++) {
-            if (timesArrayNotSorted[i] != mostCommon) {
-                writer.write(Integer.toString(timesArrayNotSorted[i]));
+        for (Integer number: sequenceNotSorted) {
+            if (number != mostCommon) {
+                writer.write(Integer.toString(number));
                 writer.newLine();
             }
         }
@@ -240,6 +244,40 @@ public class JavaTasks {
             writer.newLine();
         }
         writer.close();
+    }
+
+
+    private static int partition(List<Integer> elements, int min, int max) {
+        Integer x = elements.get(min + Sorts.random.nextInt(max - min + 1));
+        int left = min, right = max;
+        while (left <= right) {
+            while (elements.get(left) < x) {
+                left++;
+            }
+            while (elements.get(right) > x) {
+                right--;
+            }
+            if (left <= right) {
+                Integer temp = elements.get(left);
+                elements.set(left, elements.get(right));
+                elements.set(right, temp);
+                left++;
+                right--;
+            }
+        }
+        return right;
+    }
+
+    private static void listOfIntegersSort(List<Integer> elements, int min, int max) {
+        if (min < max) {
+            int border = partition(elements, min, max);
+            listOfIntegersSort(elements, min, border);
+            listOfIntegersSort(elements, border + 1, max);
+        }
+    }
+
+    private static void listOfIntegersSort(List<Integer> elements) {
+        listOfIntegersSort(elements, 0, elements.size() - 1);
     }
 
     /**

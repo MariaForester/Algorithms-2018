@@ -8,6 +8,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+import static java.lang.Math.floor;
 import static java.lang.Math.max;
 
 @SuppressWarnings("unused")
@@ -41,8 +42,8 @@ public class JavaTasks {
      * <p>
      * В случае обнаружения неверного формата файла бросить любое исключение.
      */
-    // Трудоемкость O(n * log(n))
-    // Ресурсоемкость O(n)
+    // Трудоемкость T = O(n * log(n))
+    // Ресурсоемкость R = O(n)
     static public void sortTimes(String inputName, String outputName) throws IOException, IllegalFormatException, ParseException {
         List<Date> timeList = new ArrayList<>();
         DateFormat formatter = new SimpleDateFormat("HH:mm:ss");
@@ -121,14 +122,19 @@ public class JavaTasks {
      * 99.5
      * 121.3
      */
-    // Трудоемкость O(n^2)
-    // Ресурсоемкость O(n)
+    // Трудоемкость T = O(n^2)
+    // Ресурсоемкость R = O(n)
     static public void sortTemperatures(String inputName, String outputName) throws IOException, IllegalFormatException {
         List<Float> listOfTemperatures = new ArrayList<>();
         try (BufferedReader bufferedReader = new BufferedReader(new FileReader(inputName))) {
             String line;
             while ((line = bufferedReader.readLine()) != null) {
-                listOfTemperatures.add(Float.parseFloat(line));
+                float currentTemperature = Float.parseFloat(line);
+                if (currentTemperature >= -273.0 || currentTemperature <= 500.0) {
+                    listOfTemperatures.add(currentTemperature);
+                } else {
+                    throw new IllegalArgumentException("Input data is not correct");
+                }
             }
         }
         listOfFloatsSort(listOfTemperatures);
@@ -202,8 +208,8 @@ public class JavaTasks {
      * 2
      * 2
      */
-    // Трудоемкость O(n^2)
-    // Ресурсоемкость O(n)
+    // Трудоемкость T = O(n^2)
+    // Ресурсоемкость R = O(n)
     static public void sortSequence(String inputName, String outputName) throws IOException, IllegalFormatException {
         List<Integer> sequence = new ArrayList<>();
         try (BufferedReader bufferedReader = new BufferedReader(new FileReader(inputName))) {

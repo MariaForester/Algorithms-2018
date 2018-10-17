@@ -102,8 +102,8 @@ public class JavaAlgorithms {
      * вернуть ту из них, которая встречается раньше в строке first.
      */
 
-    // Трудоемкость O(m * n)
-    // Ресурсоемкость O(n)
+    // Трудоемкость T = O(m * n)
+    // Ресурсоемкость R = O(n)
     static public String longestCommonSubstring(String first, String second) {
         int firstLength = first.length(), endingPoint = 0, secondLength = second.length(),
                 mostCommonLength = 0, currentMatrixRow = 0, currenMatrixColumn = 0;
@@ -178,8 +178,8 @@ public class JavaAlgorithms {
      * Остальные символы ни в файле, ни в словах не допускаются.
      */
 
-    // Трудоемкость O(n * m)
-    // Ресурсоемкость O(n)
+    // Трудоемкость T = O(n * m)
+    // Ресурсоемкость R = O(n)
     static public Set<String> baldaSearcher(String inputName, Set<String> words) throws IOException {
         ArrayList<String> matrixOfWords = new ArrayList<>();
         Set<String> wordsFound = new HashSet<>();

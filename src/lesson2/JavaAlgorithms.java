@@ -103,7 +103,7 @@ public class JavaAlgorithms {
      */
 
     // Трудоемкость T = O(m * n)
-    // Ресурсоемкость R = O(n)
+    // Ресурсоемкость R = O(n * m)
     static public String longestCommonSubstring(String first, String second) {
         int firstLength = first.length(), endingPoint = 0, secondLength = second.length(),
                 mostCommonLength = 0, currentMatrixRow = 0, currenMatrixColumn = 0;
@@ -178,24 +178,24 @@ public class JavaAlgorithms {
      * Остальные символы ни в файле, ни в словах не допускаются.
      */
 
-    // Трудоемкость T = O(n * m)
-    // Ресурсоемкость R = O(n)
+    // Трудоемкость T = O(exp(n))
+    // Ресурсоемкость R = O(n * m)
     static public Set<String> baldaSearcher(String inputName, Set<String> words) throws IOException {
         ArrayList<String> matrixOfWords = new ArrayList<>();
         Set<String> wordsFound = new HashSet<>();
         int matrixHeight = 0;
         try (BufferedReader bufferedReader = new BufferedReader(new FileReader(inputName))) {
-            for (String line; (line = bufferedReader.readLine()) != null; ){
+            for (String line; (line = bufferedReader.readLine()) != null; ) {
                 matrixOfWords.add(line.replaceAll(" ", ""));
                 matrixHeight++;
             }
         }
-        for (String word: words) {
-        MatrixForConsideredWord w = new MatrixForConsideredWord(matrixOfWords.get(0).length(),
-                matrixHeight);
-        if (w.searchWord(matrixOfWords, word)) {
-            wordsFound.add(word);
-        }
+        for (String word : words) {
+            MatrixForConsideredWord w = new MatrixForConsideredWord(matrixOfWords.get(0).length(),
+                    matrixHeight);
+            if (w.searchWord(matrixOfWords, word)) {
+                wordsFound.add(word);
+            }
         }
         return wordsFound;
     }

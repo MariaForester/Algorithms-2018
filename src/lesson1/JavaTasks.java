@@ -122,61 +122,43 @@ public class JavaTasks {
      * 99.5
      * 121.3
      */
-    // Трудоемкость T = O(n^2)
+    // Трудоемкость T = O(n)
     // Ресурсоемкость R = O(n)
     static public void sortTemperatures(String inputName, String outputName) throws IOException, IllegalFormatException {
-        List<Float> listOfTemperatures = new ArrayList<>();
+        int[] arrayOfTemperatures = new int[7732];
         try (BufferedReader bufferedReader = new BufferedReader(new FileReader(inputName))) {
-            String line;
-            while ((line = bufferedReader.readLine()) != null) {
-                float currentTemperature = Float.parseFloat(line);
-                if (currentTemperature >= -273.0 || currentTemperature <= 500.0) {
-                    listOfTemperatures.add(currentTemperature);
+            String currentLine;
+            while ((currentLine = bufferedReader.readLine()) != null) {
+                int currentTemperature = (int) (Float.parseFloat(currentLine) * 10);
+                if (currentTemperature <= 5000 && currentTemperature >= -2730) {
+                    if (currentTemperature >= 0) {
+                        arrayOfTemperatures[currentTemperature]++;
+                    } else {
+                        arrayOfTemperatures[5000 - currentTemperature]++;
+                    }
                 } else {
                     throw new IllegalArgumentException("Input data is not correct");
                 }
             }
         }
-        listOfFloatsSort(listOfTemperatures);
         BufferedWriter writer = new BufferedWriter(new FileWriter(outputName));
-        for (Float temperature : listOfTemperatures) {
-            writer.write(Float.toString(temperature));
-            writer.newLine();
+        for (int i = 7731; i > 5000; i--) {
+            if (arrayOfTemperatures[i] > 0) {
+                for (int j = 0; j < arrayOfTemperatures[i]; j++) {
+                    writer.write(String.valueOf((float) -(i - 5000) / 10));
+                    writer.newLine();
+                }
+            }
+        }
+        for (int i = 0; i <= 5000; i++) {
+            if (arrayOfTemperatures[i] > 0) {
+                for (int j = 0; j < arrayOfTemperatures[i]; j++) {
+                    writer.write(Float.toString((float) i / 10));
+                    writer.newLine();
+                }
+            }
         }
         writer.close();
-    }
-
-    private static int partitionForFloats(List<Float> elements, int min, int max) {
-        Float x = elements.get(min + Sorts.random.nextInt(max - min + 1));
-        int left = min, right = max;
-        while (left <= right) {
-            while (elements.get(left) < x) {
-                left++;
-            }
-            while (elements.get(right) > x) {
-                right--;
-            }
-            if (left <= right) {
-                Float temp = elements.get(left);
-                elements.set(left, elements.get(right));
-                elements.set(right, temp);
-                left++;
-                right--;
-            }
-        }
-        return right;
-    }
-
-    private static void listOfFloatsSort(List<Float> elements, int min, int max) {
-        if (min < max) {
-            int border = partitionForFloats(elements, min, max);
-            listOfFloatsSort(elements, min, border);
-            listOfFloatsSort(elements, border + 1, max);
-        }
-    }
-
-    private static void listOfFloatsSort(List<Float> elements) {
-        listOfFloatsSort(elements, 0, elements.size() - 1);
     }
 
     /**
@@ -208,83 +190,48 @@ public class JavaTasks {
      * 2
      * 2
      */
-    // Трудоемкость T = O(n^2)
+    // Трудоемкость T = O(n)
     // Ресурсоемкость R = O(n)
     static public void sortSequence(String inputName, String outputName) throws IOException, IllegalFormatException {
+        Map<Integer, Integer> numbersOfSequence = new HashMap<>();
         List<Integer> sequence = new ArrayList<>();
+        int maxFrequency = 0, mostFrequentValue = 0;
         try (BufferedReader bufferedReader = new BufferedReader(new FileReader(inputName))) {
-            for (String line; (line = bufferedReader.readLine()) != null; ) {
-                sequence.add(Integer.parseInt(line));
-            }
-        }
-        List<Integer> sequenceNotSorted = new ArrayList<Integer>(sequence);
-        listOfIntegersSort(sequence);
-        int previous = sequence.get(0);
-        int mostCommon = sequence.get(0);
-        int count = 1;
-        int maxCount = 1;
-        for (int i = 1; i < sequence.size(); i++) {
-            if (sequence.get(i) == previous) {
-                count++;
-            } else {
-                if (count > maxCount) {
-                    mostCommon = sequence.get(i - 1);
-                    maxCount = count;
+            for (String currentLine; (currentLine = bufferedReader.readLine()) != null; ) {
+                int currentNumber = Integer.parseInt(currentLine);
+                sequence.add(currentNumber);
+                if (!numbersOfSequence.containsKey(currentNumber)) {
+                    numbersOfSequence.put(currentNumber, 1);
+                    if (maxFrequency < 1) {
+                        maxFrequency = 1;
+                        mostFrequentValue = currentNumber;
+                    }
+                } else {
+                    int frequencyOfAppearing = numbersOfSequence.get(currentNumber) + 1;
+                    if (frequencyOfAppearing > maxFrequency) {
+                        maxFrequency = frequencyOfAppearing;
+                        mostFrequentValue = currentNumber;
+                    } else if (frequencyOfAppearing == maxFrequency && currentNumber < mostFrequentValue) {
+                        mostFrequentValue = currentNumber;
+                    }
+                    numbersOfSequence.replace(currentNumber, frequencyOfAppearing);
                 }
-                previous = sequence.get(i);
-                count = 1;
             }
-        }
-        if (count > maxCount) {
-            mostCommon = sequence.get(sequence.size() - 1);
         }
         BufferedWriter writer = new BufferedWriter(new FileWriter(outputName));
-        for (Integer number: sequenceNotSorted) {
-            if (number != mostCommon) {
+        for (int number : sequence) {
+            if (number != mostFrequentValue) {
                 writer.write(Integer.toString(number));
                 writer.newLine();
             }
         }
-        for (int i = 0; i < max(count, maxCount); i++) {
-            writer.write(Integer.toString(mostCommon));
+        for (int i = 0; i < maxFrequency; i++) {
+            writer.write(Integer.toString(mostFrequentValue));
             writer.newLine();
         }
         writer.close();
     }
 
-
-    private static int partition(List<Integer> elements, int min, int max) {
-        Integer x = elements.get(min + Sorts.random.nextInt(max - min + 1));
-        int left = min, right = max;
-        while (left <= right) {
-            while (elements.get(left) < x) {
-                left++;
-            }
-            while (elements.get(right) > x) {
-                right--;
-            }
-            if (left <= right) {
-                Integer temp = elements.get(left);
-                elements.set(left, elements.get(right));
-                elements.set(right, temp);
-                left++;
-                right--;
-            }
-        }
-        return right;
-    }
-
-    private static void listOfIntegersSort(List<Integer> elements, int min, int max) {
-        if (min < max) {
-            int border = partition(elements, min, max);
-            listOfIntegersSort(elements, min, border);
-            listOfIntegersSort(elements, border + 1, max);
-        }
-    }
-
-    private static void listOfIntegersSort(List<Integer> elements) {
-        listOfIntegersSort(elements, 0, elements.size() - 1);
-    }
 
     /**
      * Соединить два отсортированных массива в один

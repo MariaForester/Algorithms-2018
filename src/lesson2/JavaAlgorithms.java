@@ -178,7 +178,7 @@ public class JavaAlgorithms {
      * Остальные символы ни в файле, ни в словах не допускаются.
      */
 
-    // Трудоемкость T = O(exp(n))
+    // Трудоемкость T = O(n * m)
     // Ресурсоемкость R = O(n * m)
     static public Set<String> baldaSearcher(String inputName, Set<String> words) throws IOException {
         ArrayList<String> matrixOfWords = new ArrayList<>();

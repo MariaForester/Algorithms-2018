@@ -11,7 +11,15 @@ import java.util.*;
 public class BinaryTree<T extends Comparable<T>> extends AbstractSet<T> implements CheckableSortedSet<T> {
 
     private static class Node<T> {
-        final T value;
+        private T value;
+
+        T getValue() {
+            return value;
+        }
+
+        void setValue(T valueToEstablish) {
+            this.value = valueToEstablish;
+        }
 
         Node<T> left = null;
 
@@ -62,12 +70,65 @@ public class BinaryTree<T extends Comparable<T>> extends AbstractSet<T> implemen
      * Удаление элемента в дереве
      * Средняя
      */
+    // Трудоемкость Т = О(N) в худшем случае, O(logN) в среднем
+    // Ресурсоемкость R = O(1)
     @Override
     public boolean remove(Object o) {
-        //TODO
-        throw new NotImplementedError();
+        if (root == null) {
+            return false;
+        }
+        Node<T> parentNode = root;
+        Node<T> currentNode = root;
+        int comparisonValue;
+        while ((comparisonValue = currentNode.getValue().compareTo((T) o)) != 0) {
+            parentNode = currentNode;
+            if (comparisonValue > 0) {
+                currentNode = currentNode.left;
+            } else {
+                currentNode = currentNode.right;
+            }
+            if (currentNode == null) {
+                return false;
+            }
+        }
+        if (currentNode.right != null && currentNode.left != null) {
+            Node<T> succeedingNode = currentNode.right;
+            Node<T> previousNode = currentNode;
+            while (succeedingNode.left != null) {
+                previousNode = succeedingNode;
+                succeedingNode = succeedingNode.left;
+            }
+            currentNode.setValue(succeedingNode.getValue());
+            succeedingNode.setValue(null);
+            if (previousNode == currentNode) {
+                currentNode.right = succeedingNode.right;
+            } else {
+                previousNode.left = succeedingNode.right;
+            }
+            succeedingNode.right = null;
+        } else {
+            if (currentNode.left != null) {
+                moveToSubtree(parentNode, currentNode, currentNode.left);
+            } else if (currentNode.right != null) {
+                moveToSubtree(parentNode, currentNode, currentNode.right);
+            } else {
+                moveToSubtree(parentNode, currentNode, null);
+            }
+        }
+        size--;
+        return true;
     }
 
+    private void moveToSubtree(Node<T> parentNode, Node<T> curretnNode, Node<T> child) {
+        if (parentNode == curretnNode) {
+            root = child;
+        } else if (parentNode.left == curretnNode){
+            parentNode.left = child;
+        } else {
+            parentNode.right = child;
+        }
+        curretnNode.setValue(null);
+    }
 
     @Override
     public boolean contains(Object o) {
@@ -98,39 +159,55 @@ public class BinaryTree<T extends Comparable<T>> extends AbstractSet<T> implemen
     public class BinaryTreeIterator implements Iterator<T> {
 
         private Node<T> current = null;
+        private LinkedList<Node<T>> listForIteration;
 
         private BinaryTreeIterator() {
+            listForIteration = new LinkedList<>();
+            addToList(root);
+        }
+
+        private void addToList(Node<T> currentNode) {
+            while (currentNode != null) {
+                listForIteration.addFirst(currentNode);
+                currentNode = currentNode.left;
+            }
         }
 
         /**
          * Поиск следующего элемента
          * Средняя
          */
+        // Трудоемкость Т = О(1)
+        // Ресурсоемкость R = О(N)
         private Node<T> findNext() {
-            // TODO
-            throw new NotImplementedError();
+            Node<T> nextNode = listForIteration.getFirst();
+            listForIteration.removeFirst();
+            return nextNode;
         }
 
         @Override
         public boolean hasNext() {
-            return findNext() != null;
+            return !listForIteration.isEmpty();
         }
 
         @Override
         public T next() {
             current = findNext();
-            if (current == null) throw new NoSuchElementException();
-            return current.value;
+            if (current.right != null) {
+                addToList(current.right);
+            }
+            return current.getValue();
         }
 
         /**
          * Удаление следующего элемента
          * Сложная
          */
+        // Трудоемкоть Т = О(N) в худшем случае, O(logN) в среднем
+        // Ресурсоемкость R = O(1)
         @Override
         public void remove() {
-            // TODO
-            throw new NotImplementedError();
+           BinaryTree.this.remove(current.getValue());
         }
     }
 
@@ -167,7 +244,7 @@ public class BinaryTree<T extends Comparable<T>> extends AbstractSet<T> implemen
      * Найти множество всех элементов меньше заданного
      * Сложная
      */
-    // Трудоемкость T = O(n * log(n))
+    // Трудоемкость T = O(n)
     // Ресурсоемкость R = O(n)
     @NotNull
     @Override
@@ -179,7 +256,7 @@ public class BinaryTree<T extends Comparable<T>> extends AbstractSet<T> implemen
 
     private void headSetRecursive(T toElement, SortedSet<T> sortedSet, Node<T> currentNode) {
         int edgeComparison = currentNode.value.compareTo(toElement);
-        if (edgeComparison == -1) {
+        if (edgeComparison < 0) {
             sortedSet.add(currentNode.value);
             if (currentNode.right != null) {
                 headSetRecursive(toElement, sortedSet, currentNode.right);
@@ -213,7 +290,7 @@ public class BinaryTree<T extends Comparable<T>> extends AbstractSet<T> implemen
      * Найти множество всех элементов больше или равных заданного
      * Сложная
      */
-    // Трудоемкость T = O(n * log(n))
+    // Трудоемкость T = O(n)
     // Ресурсоемкость R = O(n)
     @NotNull
     @Override
@@ -225,7 +302,7 @@ public class BinaryTree<T extends Comparable<T>> extends AbstractSet<T> implemen
 
     private void tailSetRecursive(T fromElement, SortedSet<T> sortedSet, Node<T> currentNode) {
         int edgeComparison = currentNode.value.compareTo(fromElement);
-        if (edgeComparison == -1) {
+        if (edgeComparison < 0) {
             if (currentNode.right != null) {
                 tailSetRecursive(fromElement, sortedSet, currentNode.right);
             }

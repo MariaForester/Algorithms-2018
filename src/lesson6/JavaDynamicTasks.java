@@ -2,9 +2,13 @@ package lesson6;
 
 import kotlin.NotImplementedError;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @SuppressWarnings("unused")
 public class JavaDynamicTasks {
@@ -36,6 +40,8 @@ public class JavaDynamicTasks {
      * В примере ответами являются 2, 8, 9, 12 или 2, 5, 9, 12 -- выбираем первую из них.
      */
     public static List<Integer> longestIncreasingSubSequence(List<Integer> list) {
+        // Трудоемкость T = O(n^2)
+        // Ресурсоемкость R = O(n)
         if (list.size() == 0 || list.size() == 1) {
             return list;
         }
@@ -56,17 +62,13 @@ public class JavaDynamicTasks {
             }
         }
         int count = lengths[maxLengthIndices];
-        int[] res = new int[count];
+        int[] result = new int[count];
         int i = maxLengthIndices;
         while (i != -1) {
-            res[--count] = list.get(i);
+            result[--count] = list.get(i);
             i = previousIndices[i];
         }
-        List<Integer> result  = new ArrayList<>();
-        for (int num: res) {
-            result.add(num);
-        }
-        return result;
+        return Arrays.stream(result).boxed().collect(Collectors.toList());
     }
 
     /**
@@ -89,8 +91,32 @@ public class JavaDynamicTasks {
      *
      * Здесь ответ 2 + 3 + 4 + 1 + 2 = 12
      */
-    public static int shortestPathOnField(String inputName) {
-        throw new NotImplementedError();
+    // Трудоемкость T = O(n*m)
+    // Ресурсоемкость R = O(n*m)
+
+    public static int shortestPathOnField(String inputName) throws IOException {
+        List<String> field = new ArrayList<>();
+        try (BufferedReader bufferedReader = new BufferedReader(new FileReader(inputName))) {
+            for (String line; (line = bufferedReader.readLine()) != null; ) {
+                field.add(line.replaceAll(" ", ""));
+            }
+        }
+        int matrixLength = field.get(0).length(), matrixHeight = field.size();
+        int[][] sums = new int[matrixHeight][matrixLength];
+        sums[0][0] = field.get(0).charAt(0) - 48;
+        for (int i = 1; i < matrixLength; i++) {
+            sums[0][i] = field.get(0).charAt(i) - 48 + sums[0][i - 1];
+        }
+        for (int i = 1; i < matrixHeight; i++) {
+            sums[i][0] = field.get(i).charAt(0) - 48 + sums[i - 1][0];
+        }
+        for (int i = 1; i < matrixLength; i++) {
+            for (int j = 1; j < matrixHeight; j++) {
+                int minPreviousSum = Math.min(Math.min(sums[j - 1][i], sums[j][i - 1]), sums[j -1][i -1]);
+                sums[j][i] = field.get(j).charAt(i) - 48 + minPreviousSum;
+            }
+        }
+        return sums[matrixHeight - 1][matrixLength - 1];
     }
 
     // Задачу "Максимальное независимое множество вершин в графе без циклов"

@@ -74,7 +74,7 @@ public class BinaryTree<T extends Comparable<T>> extends AbstractSet<T> implemen
     // Ресурсоемкость R = O(1)
     @Override
     public boolean remove(Object o) {
-        if (root == null) {
+        if (root == null || !contains(o)) {
             return false;
         }
         Node<T> parentNode = root;
@@ -91,6 +91,13 @@ public class BinaryTree<T extends Comparable<T>> extends AbstractSet<T> implemen
                 return false;
             }
         }
+        delete(currentNode, parentNode);
+        size--;
+        return true;
+    }
+
+
+    private void delete(Node<T> currentNode, Node<T> parentNode) {
         if (currentNode.right != null && currentNode.left != null) {
             Node<T> succeedingNode = currentNode.right;
             Node<T> previousNode = currentNode;
@@ -115,19 +122,17 @@ public class BinaryTree<T extends Comparable<T>> extends AbstractSet<T> implemen
                 moveToSubtree(parentNode, currentNode, null);
             }
         }
-        size--;
-        return true;
     }
 
-    private void moveToSubtree(Node<T> parentNode, Node<T> curretnNode, Node<T> child) {
-        if (parentNode == curretnNode) {
+    private void moveToSubtree(Node<T> parentNode, Node<T> currentNode, Node<T> child) {
+        if (parentNode == currentNode) {
             root = child;
-        } else if (parentNode.left == curretnNode){
+        } else if (parentNode.left == currentNode){
             parentNode.left = child;
         } else {
             parentNode.right = child;
         }
-        curretnNode.setValue(null);
+        currentNode.setValue(null);
     }
 
     @Override
@@ -207,7 +212,19 @@ public class BinaryTree<T extends Comparable<T>> extends AbstractSet<T> implemen
         // Ресурсоемкость R = O(1)
         @Override
         public void remove() {
-           BinaryTree.this.remove(current.getValue());
+            Node<T> nodeToDelete = current;
+            if (current != null) {
+                Node<T> currentNode;
+                if (hasNext()) {
+                    currentNode = findNext();
+                } else {
+                    currentNode = find(last());
+                }
+                delete(nodeToDelete, currentNode);
+                size--;
+            } else {
+                return;
+            }
         }
     }
 

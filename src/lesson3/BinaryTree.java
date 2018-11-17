@@ -106,13 +106,13 @@ public class BinaryTree<T extends Comparable<T>> extends AbstractSet<T> implemen
                 succeedingNode = succeedingNode.left;
             }
             currentNode.setValue(succeedingNode.getValue());
-            succeedingNode = null;
             if (previousNode == currentNode) {
                 currentNode.right = succeedingNode.right;
             } else {
                 previousNode.left = succeedingNode.right;
             }
             succeedingNode.right = null;
+            succeedingNode = null;
         } else {
             if (currentNode.left != null) {
                 moveToSubtree(parentNode, currentNode, currentNode.left);
@@ -221,22 +221,22 @@ public class BinaryTree<T extends Comparable<T>> extends AbstractSet<T> implemen
                     currentNode = find(last());
                 }
                 if (currentNode != null) {
-                    delete(nodeToDelete, findParent(root, nodeToDelete.value));
+                    delete(nodeToDelete, findCurrentParent(root, nodeToDelete.value));
                     size--;
                 }
             }
         }
 
-        private Node<T> findParent(Node<T> start, T value) {
-            Node<T> current = start;
+        private Node<T> findCurrentParent(Node<T> mainRoot, T valueForDeletion) {
+            Node<T> current = mainRoot;
             while (current != null) {
-                int comparison = value.compareTo(current.value);
+                int comparison = valueForDeletion.compareTo(current.value);
                 if (comparison == 0) return null;
                 if (comparison < 0) {
-                    if (value.compareTo(current.left.value) == 0) return current;
+                    if (valueForDeletion.compareTo(current.left.value) == 0) return current;
                     else current = current.left;
                 } else {
-                    if (value.compareTo(current.right.value) == 0) return current;
+                    if (valueForDeletion.compareTo(current.right.value) == 0) return current;
                     else current = current.right;
                 }
             }

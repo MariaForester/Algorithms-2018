@@ -159,6 +159,56 @@ class BinaryTreeTest {
         }
     }
 
+    private fun testIteratorRemoveSpecialCase(create: () -> CheckableSortedSet<Int>) {
+        val list = mutableListOf<Int>()
+        list.add(37)
+        list.add(38)
+        list.add(34)
+        list.add(83)
+        list.add(90)
+        list.add(72)
+        list.add(83)
+        list.add(84)
+        list.add(36)
+        list.add(67)
+        list.add(72)
+        list.add(67)
+        list.add(54)
+        list.add(60)
+        list.add(49)
+        list.add(97)
+        list.add(64)
+        list.add(70)
+        list.add(12)
+        list.add(1)
+        val treeSet = TreeSet<Int>()
+        val binarySet = create()
+        for (element in list) {
+            treeSet += element
+            binarySet += element
+        }
+        val toRemove = list[list.indexOf(70)]
+        treeSet.remove(toRemove)
+        println("Removing $toRemove from $list")
+        val iterator = binarySet.iterator()
+        while (iterator.hasNext()) {
+            val element = iterator.next()
+            print("$element ")
+            if (element == toRemove) {
+                iterator.remove()
+            }
+        }
+        println()
+        assertEquals<SortedSet<*>>(treeSet, binarySet, "After removal of $toRemove from $list")
+        assertEquals(treeSet.size, binarySet.size)
+        for (element in list) {
+            val inn = element != toRemove
+            assertEquals(inn, element in binarySet,
+                    "$element should be ${if (inn) "in" else "not in"} tree")
+        }
+        assertTrue(binarySet.checkInvariant())
+    }
+
     @Test
     @Tag("Hard")
     fun testIteratorRemoveKotlin() {
@@ -168,6 +218,7 @@ class BinaryTreeTest {
     @Test
     @Tag("Hard")
     fun testIteratorRemoveJava() {
+        testIteratorRemoveSpecialCase { createJavaTree() }
         testIteratorRemove { createJavaTree() }
     }
 }

@@ -74,7 +74,7 @@ public class BinaryTree<T extends Comparable<T>> extends AbstractSet<T> implemen
     // Ресурсоемкость R = O(1)
     @Override
     public boolean remove(Object o) {
-        if (root == null || !contains(o)) {
+        if (root == null) {
             return false;
         }
         Node<T> parentNode = root;
@@ -106,7 +106,7 @@ public class BinaryTree<T extends Comparable<T>> extends AbstractSet<T> implemen
                 succeedingNode = succeedingNode.left;
             }
             currentNode.setValue(succeedingNode.getValue());
-            succeedingNode.setValue(null);
+            succeedingNode = null;
             if (previousNode == currentNode) {
                 currentNode.right = succeedingNode.right;
             } else {
@@ -132,7 +132,7 @@ public class BinaryTree<T extends Comparable<T>> extends AbstractSet<T> implemen
         } else {
             parentNode.right = child;
         }
-        currentNode.setValue(null);
+        currentNode = null;
     }
 
     @Override

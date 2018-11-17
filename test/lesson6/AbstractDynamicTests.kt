@@ -1,5 +1,6 @@
 package lesson6
 
+import java.io.IOException
 import kotlin.test.assertEquals
 
 abstract class AbstractDynamicTests {
@@ -44,6 +45,7 @@ abstract class AbstractDynamicTests {
                 23, 76, 34, 93, 123, 21, 56, 87, 91, 12, 45, 98, 140, 12, 5, 38, 349, 65, 94,
                 45, 76, 15, 99, 100, 88, 84, 35, 88
         )))
+        assertEquals(listOf(0), longestIncreasingSubSequence(listOf(0, 0, 0, 0, 0, 0, 0)))
     }
 
     fun shortestPathOnField(shortestPathOnField: (String) -> Int) {
@@ -51,6 +53,7 @@ abstract class AbstractDynamicTests {
         assertEquals(12, shortestPathOnField("input/field_in1.txt"))
         assertEquals(43, shortestPathOnField("input/field_in3.txt"))
         assertEquals(0, shortestPathOnField("input/field_in4.txt"))
+        assertEquals(350, shortestPathOnField("input/field_in5.txt"))
+        assertEquals(6, shortestPathOnField("input/field_in6.txt"))
     }
-
 }

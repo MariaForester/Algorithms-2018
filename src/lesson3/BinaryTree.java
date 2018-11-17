@@ -220,12 +220,30 @@ public class BinaryTree<T extends Comparable<T>> extends AbstractSet<T> implemen
                 } else {
                     currentNode = find(last());
                 }
-                delete(nodeToDelete, currentNode);
-                size--;
+                if (currentNode != null) {
+                    delete(nodeToDelete, findParent(root, currentNode.value));
+                    size--;
+                }
             } else {
                 return;
             }
         }
+        private Node<T> findParent(Node<T> start, T value) {
+            Node<T> current = start;
+            while (current != null) {
+                int comparison = value.compareTo(current.value);
+                if (comparison == 0) return null;
+                if (comparison < 0) {
+                    if (value.compareTo(current.left.value) == 0) return current;
+                    else current = current.left;
+                } else {
+                    if (value.compareTo(current.right.value) == 0) return current;
+                    else current = current.right;
+                }
+            }
+            return null;
+        }
+
     }
 
     @NotNull
